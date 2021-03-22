@@ -4,7 +4,7 @@ import argparse
 from glob import glob
 
 exts = ['pdf', 'jpg', 'png', 'doc', 'docx']
-titles = {'student_id': '学号', 'student_name': '姓名', 'attachment': '作业'}
+titles = {'student_id': '学号', 'student_name': '姓名', 'attachment': '作业', 'index': '编号'}
 
 
 def get_filename_mapping(received):
@@ -22,7 +22,7 @@ def get_filename_mapping(received):
     """
     _name_map = dict()  # format: {old: new}
 
-    with open(received, 'r') as f:
+    with open(received, 'r', encoding='utf-8') as f:
         rows = csv.reader(f)
         header = next(rows)
 
@@ -30,19 +30,23 @@ def get_filename_mapping(received):
         sid_x = header.index([y for y in filter(lambda x: titles['student_id'] in x, header)][0])
         name_x = header.index([y for y in filter(lambda x: titles['student_name'] in x, header)][0])
         link_x = header.index([y for y in filter(lambda x: titles['attachment'] in x, header)][0])
+        index_x = header.index([y for y in filter(lambda x: titles['index'] in x, header)][0])
 
         for row in rows:
             # 避免同学输错前5位学号
             sid = '20216' + row[sid_x].strip()[-3:]
             name = row[name_x].strip()
-            link = row[link_x].split('"')[1].strip()
-            typename = row[link_x].split('"')[-2].split('.')[-1].strip()
 
             if args.directly:
                 # 直接问卷附件下载版本
-                old_name = row[link_x].split('"')[-2].strip()
+                typename = row[link_x].split('.')[-1]
+                # 默认下载下来旧文件名的命名规则为：xx_xxx.xx （编号_文件名.后缀名）
+                old_name = row[index_x] + '_' + row[link_x]
             else:
                 # 微云版本
+                link = row[link_x].split('"')[1].strip()
+                typename = row[link_x].strip().split('"')[-2].split('.')[-1]
+
                 survey_id = link.split('=')[1].split('&')[0]
                 question_id = link.split('=')[2].split('&')[0]
                 filename = link.split('=')[3].split('&')[0]
@@ -70,7 +74,7 @@ def rename_record_homeworks(folder, filename_mapping):
     """
     candidates = []
     for ext in exts:
-        candidates.extend(glob(os.path.join(folder, '20216*.') + ext))
+        candidates.extend(glob(os.path.join(folder, '*.') + ext))
     for f in sorted(candidates):
         # 重命名
         old_name = f.split(os.sep)[-1]
@@ -93,7 +97,7 @@ def get_classmates_dict(classmates_csv):
         return
 
     # 加载全班同学列表
-    with open(classmates_csv, 'r') as f:
+    with open(classmates_csv, 'r', encoding='utf-8') as f:
         rows = csv.reader(f)
         header = next(rows)
 
