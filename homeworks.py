@@ -133,16 +133,15 @@ def get_submit_info(folder, classmates):
     print('{} - 目前已接收{}份作业'.format(args.folder.split(os.sep)[-1], len(s1)))
 
     # 缺交情况
+    print('')
     if len(s2) > 0:
-        print('')
         print('未收到学号')
-        print('=' * 8)
+        print('========')
         if args.verbose:
             [print(sid, name) for (sid, name) in s2]
         else:
             [print(sid) for (sid, _) in s2]
     else:
-        print('')
         print('本周已收齐')
 
 
