@@ -4,21 +4,6 @@
 
 > 问卷中应至少包含姓名和学号两题，用于分辨附件的提交者
 
-### 推荐文件组织层次
-
-```
-.
-├── classmates.csv         # 全班同学名单，至少包含"学号"和"姓名"两列，次序不重要
-├── homeworks.py           # 本脚本
-└── Math01                 # 某次作业的文件夹
-     ├── xxxxxxx_xxx.csv   # 后台导出的.csv文件，至少包含"学号"、"姓名"、"作业"三题的结果，含关键字即可
-     ├── xxxxxxx_xxx.pdf   # 其他附件
-     ├── xxxxxxx_xxx.png
-     ├── xxxxxxx_xxx.jpg
-     ├── xxxxxxx_xxx.doc
-     └── xxxxxxx_xxx.docx
-```
-
 ### 用法
 
 先从问卷后台的"回收数据"导出统计情况，注意选择导出原始数据
@@ -33,7 +18,22 @@
 
 ![](media/dump_weiyun.png)
 
-将压缩包解压成如上的推荐文件组织层次，使用如下命令进行处理
+将压缩包解压成如下的推荐文件组织层次
+
+```
+.
+├── classmates.csv         # 全班同学名单，至少包含"学号"和"姓名"两列，次序不重要
+├── homeworks.py           # 本脚本
+└── Math01                 # 某次作业的文件夹
+     ├── xxxxxxx_xxx.csv   # 后台导出的.csv文件，至少包含"学号"、"姓名"、"作业"三题的结果，含关键字即可
+     ├── xxxxxxx_xxx.pdf   # 其他附件
+     ├── xxxxxxx_xxx.png
+     ├── xxxxxxx_xxx.jpg
+     ├── xxxxxxx_xxx.doc
+     └── xxxxxxx_xxx.docx
+```
+
+使用如下命令进行处理
 
 ```shell script
 python homeworks.py -p Math01
