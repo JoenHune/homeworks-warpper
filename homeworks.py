@@ -12,10 +12,13 @@ def get_filename_mapping(received):
     获取新旧文件名的映射关系
     ====================
 
-    因为腾讯问卷收集的附件会被后台重新命名，这个函数可以通过对
+    因为腾讯问卷收集的附件会被后台重新命名，这个函数可以通过对导出的附件进行重命名
 
-    :param received:
-    :return:
+    注意：按照腾讯问卷当前版本（截止自2021年3月22日）的特性，
+         所有重复提交（包括提交后修改）的附件，只会保留最新提交的信息，所以旧提交的附件不会被更改名字
+
+    :param received: 后台导出的csv文件，问卷统计信息
+    :return _name_map: 重命名规则
     """
     _name_map = dict()  # format: {old: new}
 
@@ -52,7 +55,19 @@ def get_filename_mapping(received):
     return _name_map
 
 
-def rename_record_homework(folder, filename_mapping):
+def rename_record_homeworks(folder, filename_mapping):
+    """
+    重命名附件
+    =========
+
+    根据 get_filename_mapping 得到的文件名映射情况对附件进行重命名
+
+    只重命名最新提交，剩下未重命名的附件为较旧的提交
+    
+    :param folder: 要处理的文件夹
+    :param filename_mapping: 文件名映射关系
+    :return: None
+    """
     candidates = []
     for ext in exts:
         candidates.extend(glob(os.path.join(folder, '20216*.') + ext))
@@ -64,6 +79,15 @@ def rename_record_homework(folder, filename_mapping):
 
 
 def get_classmates_dict(classmates_csv):
+    """
+    获取所有同学的信息
+    ===============
+
+    根据全班同学名单获取学号和姓名信息，同时构造提交情况登记表(dict)
+
+    :param classmates_csv: 全班同学名单，至少包含"学号"和"姓名"两项
+    :return classmates: 提交情况登记表，格式: { student_id : [False, name] }
+    """
     if not os.path.exists(classmates_csv):
         print("仍未指定全班同学名单，请将全班同学名单的.csv文件放入同级文件夹以统计提交情况")
         return
@@ -85,7 +109,14 @@ def get_classmates_dict(classmates_csv):
 
 
 def get_submit_info(folder, classmates):
-    # 已提交情况
+    """
+    统计提交情况
+    ==========
+
+    :param folder: 要处理的文件夹
+    :param classmates: 提交情况登记表
+    :return: None
+    """
 
     # 完全限定命名格式
     candidates = []
@@ -150,6 +181,6 @@ if __name__ == "__main__":
     # 如果工作目录中的.csv全都是下载下来的提交情况，这将选择最新的一份文件
     received_csv = sorted(glob(os.path.join(args.folder, '*.csv')))[-1]
 
-    rename_record_homework(args.folder, get_filename_mapping(received_csv))
+    rename_record_homeworks(args.folder, get_filename_mapping(received_csv))
 
     get_submit_info(args.folder, get_classmates_dict(args.classmates))
