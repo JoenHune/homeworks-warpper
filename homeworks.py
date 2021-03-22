@@ -18,7 +18,7 @@ def get_filename_mapping(received):
          所有重复提交（包括提交后修改）的附件，只会保留最新提交的信息，所以旧提交的附件不会被更改名字
 
     :param received: 后台导出的csv文件，问卷统计信息
-    :return _name_map: 重命名规则
+    :return: _name_map: 重命名规则
     """
     _name_map = dict()  # format: {old: new}
 
@@ -86,7 +86,7 @@ def get_classmates_dict(classmates_csv):
     根据全班同学名单获取学号和姓名信息，同时构造提交情况登记表(dict)
 
     :param classmates_csv: 全班同学名单，至少包含"学号"和"姓名"两项
-    :return classmates: 提交情况登记表，格式: { student_id : [False, name] }
+    :return: classmates: 提交情况登记表，格式: { student_id : [False, name] }
     """
     if not os.path.exists(classmates_csv):
         print("仍未指定全班同学名单，请将全班同学名单的.csv文件放入同级文件夹以统计提交情况")
@@ -144,12 +144,6 @@ def get_submit_info(folder, classmates):
     else:
         print('')
         print('本周已收齐')
-
-    # if len(received) != len(classmates.keys()):
-    #     print('')
-    #     print('缺交学号')
-    #     print('=' * 8)
-    #     [print(sid) for sid, submitted in classmates.items() if not submitted]
 
 
 if __name__ == "__main__":
