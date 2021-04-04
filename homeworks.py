@@ -34,7 +34,7 @@ def get_filename_mapping(received):
 
         for row in rows:
             # 避免同学输错前5位学号
-            sid = '20216' + row[sid_x].strip()[-3:]
+            sid = row[sid_x].strip()[-3:]
             name = row[name_x].strip()
 
             try:
@@ -130,14 +130,16 @@ def get_submit_info(folder, classmates):
     :return: None
     """
 
-    # 完全限定命名格式
+    # 限定命名格式为数字开头
     candidates = []
     for ext in exts:
-        candidates.extend(glob(os.path.join(folder, '20216*.') + ext))
+        candidates.extend(glob(os.path.join(folder, '[0-9]*.') + ext))
     for f in sorted(candidates):
         sid = f.split(os.sep)[-1].split('_')[0]
         if sid in classmates.keys():
             classmates[sid][0] = True
+        else:
+            print(f'Warning: Student ID {sid} is not valid.')
 
     s1 = [(k, v[1]) for k, v in classmates.items() if v[0] is True]
     s2 = [(k, v[1]) for k, v in classmates.items() if v[0] is False]
