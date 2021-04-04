@@ -3,7 +3,7 @@ import os
 import argparse
 from glob import glob
 
-exts = ['pdf', 'jpg', 'png', 'doc', 'docx']
+exts = ['pdf', 'jpeg', 'jpg', 'png', 'doc', 'docx']
 titles = {'student_id': '学号', 'student_name': '姓名', 'attachment': '作业', 'index': '编号'}
 
 
@@ -37,22 +37,30 @@ def get_filename_mapping(received):
             sid = '20216' + row[sid_x].strip()[-3:]
             name = row[name_x].strip()
 
+            try:
+                # 默认情况下，附件名是个超链接，格式为
+                # =Hyperlink("LINK", "FILENAME")
+                # 按 " 切割取倒数第2段刚好是旧的文件名
+                old_name = row[link_x].split('"')[-2]
+            except IndexError:
+                # 有些时候用户可能已经把原.csv文件中的超链接删除了
+                # 这时候旧文件名就是列重的内容
+                old_name = row[link_x]
+
             if args.directly:
                 # 直接问卷附件下载版本
-                typename = row[link_x].split('.')[-1]
                 # 默认下载下来旧文件名的命名规则为：xx_xxx.xx （编号_文件名.后缀名）
-                old_name = row[index_x] + '_' + row[link_x]
+                old_name = row[index_x] + '_' + old_name
             else:
-                # 微云版本
-                link = row[link_x].split('"')[1].strip()
-                typename = row[link_x].strip().split('"')[-2].split('.')[-1]
+                # 微云版本的附件名不会被前置加序号
+                pass
 
-                survey_id = link.split('=')[1].split('&')[0]
-                question_id = link.split('=')[2].split('&')[0]
-                filename = link.split('=')[3].split('&')[0]
-                old_name = survey_id + '_' + question_id + '_' + filename
+            ext = old_name.split('.')[-1]
 
-            new_name = sid + '_' + name + '.' + typename
+            if ext not in exts:
+                print(f'Warning: Type of filename [{old_name}] submitted by {name}({sid}) is not valid.')
+
+            new_name = sid + '_' + name + '.' + ext
 
             _name_map[old_name] = new_name
 
