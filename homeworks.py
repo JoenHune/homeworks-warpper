@@ -33,8 +33,8 @@ def get_filename_mapping(received):
         index_x = header.index([y for y in filter(lambda x: titles['index'] in x, header)][0])
 
         for row in rows:
-            # 避免同学输错前5位学号
-            sid = row[sid_x].strip()[-3:]
+            # 获取同学的学号和姓名
+            sid = row[sid_x].strip()
             name = row[name_x].strip()
 
             try:
